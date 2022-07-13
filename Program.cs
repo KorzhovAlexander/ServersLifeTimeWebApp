@@ -1,7 +1,22 @@
+using Microsoft.EntityFrameworkCore;
+using ServersLifeTimeWebApp.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+var isUseInMemory = builder.Configuration.GetValue<bool>("UseInMemoryDatabase");
+if (isUseInMemory)
+{
+    builder.Services.AddDbContext<AppDbContext>(options =>
+        options.UseInMemoryDatabase("ServersLifeTimeWebApp"));
+}
+else
+{
+    builder.Services.AddDbContext<AppDbContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+}
 
 var app = builder.Build();
 
