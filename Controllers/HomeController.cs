@@ -23,6 +23,21 @@ public class HomeController : Controller
     [HttpGet]
     public async Task<IActionResult> GetServers() => Ok(await _context.Servers.AsNoTracking().ToListAsync());
 
+    [HttpGet]
+    public async Task<IActionResult> GetTotalUsageTime()
+    {
+        var intervals = await _context.Servers
+            .Select(server => new[] {server.CreateDate, server.RemoveDate ?? DateTime.Now})
+            .ToArrayAsync();
+
+        var intervalsSum = intervals
+            .Merge()
+            .Select(times => times[1] - times[0])
+            .Aggregate(TimeSpan.Zero, (sumSoFar, next) => sumSoFar + next);
+        return Ok(intervalsSum);
+    }
+
+
     [HttpPost]
     public async Task<IActionResult> CreateServer()
     {
