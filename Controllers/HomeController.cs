@@ -22,6 +22,9 @@ public class HomeController : Controller
     // GET: home/getservers
     [HttpGet]
     public async Task<IActionResult> GetServers() => Ok(await _context.Servers.AsNoTracking().ToListAsync());
+    
+    [HttpGet]
+    public IActionResult GetCurrentDateTime() => Ok(DateTime.Now);
 
     [HttpGet]
     public async Task<IActionResult> GetTotalUsageTime()
