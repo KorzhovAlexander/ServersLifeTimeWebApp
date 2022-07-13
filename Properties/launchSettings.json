@@ -17,11 +17,13 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "IIS Express": {
-      "commandName": "IISExpress",
+    "ServersLifeTimeWebProd": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
       "launchBrowser": false,
+      "applicationUrl": "https://localhost:7039;http://localhost:5039",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Production"
       }
     }
   }
