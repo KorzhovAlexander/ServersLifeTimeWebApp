@@ -2,6 +2,7 @@
 
 public static class MergeExtenstion
 {
+    // https://ru.stackoverflow.com/a/978096
     public static IEnumerable<DateTime[]> Merge(this DateTime[][] intervals)
     {
         if (intervals == null || intervals.Length == 0) return Array.Empty<DateTime[]>();
@@ -15,7 +16,7 @@ public static class MergeExtenstion
         {
             var next = intervals[i];
             if (curr[1] >= next[0])
-                curr = new DateTime[] {curr[0], curr[1] > next[1] ? curr[1] : next[1]};
+                curr = new[] {curr[0], curr[1] > next[1] ? curr[1] : next[1]};
             else
             {
                 stack.Push(curr);
