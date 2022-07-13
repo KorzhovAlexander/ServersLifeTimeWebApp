@@ -2,7 +2,95 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div>
+    <div>
+        <span>
+            CurrentDateTime:
+        </span>
+        <span id="current-date-time">
+        </span>
+    </div>
+    <div>
+        <span>
+            TotalUsageTime:
+        </span>
+        <span id="total-usage-time">
+        </span>
+    </div>
+
+    <table id="servers" style="width: -webkit-fill-available;">
+    </table>
+    
+    <button onclick="create()">Add</button>
+    <button onclick="remove()">Remove</button>
 </div>
+
+
+<script>
+async function getTotalUsageTime(){
+    return await fetch('/Home/GetTotalUsageTime').then(value => value.json())
+}
+
+async function getCurrentDateTime(){
+    return await fetch('/Home/GetCurrentDateTime').then(value => value.json())
+}
+
+async function getServers(){
+    return await fetch('/Home/GetServers').then(value => value.json())
+}
+
+async function create(){
+    return await fetch(`/Home/CreateServer`,{method: 'POST'}).then(() => refreshData())
+}
+
+async function remove(){
+    const serversElem = document.getElementById("servers");
+    const inputElements = Array.from(serversElem.querySelectorAll("input, select, checkbox, textarea"))
+    const selectedForRemove = inputElements.filter(element=>element.checked).map(element=> parseInt(element.value))
+    
+
+    const param = {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({selectedIds: selectedForRemove})
+    };
+    
+    return await fetch(`/Home/RemoveServers`,param).then(() => refreshData())
+}
+
+function refreshData(){
+    let totalTimePromise = getTotalUsageTime();
+    const currentTimePromise = getCurrentDateTime();
+    const serversPromise = getServers();
+    
+    Promise.all([totalTimePromise,currentTimePromise,serversPromise]).then(([totalTime,currentTime, servers]) =>{
+        let timeTd = document.getElementById("current-date-time")
+        timeTd.innerHTML='<strong>'+formatTextDate(currentTime)+'</strong>'
+        
+        let totalTimeTd = document.getElementById("total-usage-time")
+        totalTimeTd.innerHTML='<strong>'+totalTime+'</strong>'
+        
+        let serversTr = document.getElementById("servers")
+        serversTr.innerHTML='<tr><td>VirtualServerId</td><td>CreateDateTime</td><td>RemoveDateTime</td><td>SelectedForRemove</td></tr>'
+        for (let server of servers) {
+            const row = `<tr>
+                            <td>${server.id}</td><td>${formatTextDate(server.createDate)}</td>
+                            <td>${formatTextDate(server.removeDate)}</td>
+                            <td><input value="${server.id}" type="checkbox"/></td>
+                        </tr>`;
+            
+            serversTr.innerHTML=serversTr.innerHTML+ row        
+        }
+    })
+}
+function formatTextDate(dateStr){
+    if (!dateStr) return '';
+    
+    const date = new Date(dateStr)
+    return date.toLocaleString()
+}
+refreshData()
+</script>
