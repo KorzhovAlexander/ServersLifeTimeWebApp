@@ -24,9 +24,6 @@ public class AppDbContext : DbContext
         serversTable
             .Property(server => server.RemoveDate)
             .HasColumnName("RemoveDateTime");
-        serversTable
-            .Property(server => server.IsSelectedForRemove)
-            .HasColumnName("SelectedForRemove");
 
 
         serversTable.HasData(new List<Server>
