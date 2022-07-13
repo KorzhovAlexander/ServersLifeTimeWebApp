@@ -54,18 +54,21 @@ public class HomeController : Controller
 
         return StatusCode(StatusCodes.Status201Created, server.Id);
     }
-    
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> RemoveServer(int id)
+
+    [HttpPost]
+    public async Task<IActionResult> RemoveServers([FromBody] DeletedServersDto deletedServers)
     {
-        var server = await _context.Servers.FindAsync(id);
+        var servers = await _context.Servers
+            .Where(server => 
+                server.RemoveDate == null 
+                &&
+                deletedServers.SelectedIds.Contains(server.Id))
+            .ToListAsync();
+        
+        var serverRemoveDate = DateTime.Now;
 
-        if (server is null) return NotFound();
-
-        server.IsSelectedForRemove = true;
+        servers.ForEach(server => server.RemoveDate = serverRemoveDate);
         await _context.SaveChangesAsync();
-
-        //todo: removing server job start
         return Ok();
     }
 }
