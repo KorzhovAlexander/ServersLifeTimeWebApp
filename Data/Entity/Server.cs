@@ -1,4 +1,4 @@
-﻿namespace ServersLifeTimeWebApp.Data;
+﻿namespace ServersLifeTimeWebApp.Data.Entity;
 
 public class Server
 {
