@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServersLifeTimeWebApp.Data;
+using ServersLifeTimeWebApp.Data.Entity;
 
 namespace ServersLifeTimeWebApp.Controllers;
 
@@ -22,6 +23,20 @@ public class HomeController : Controller
     [HttpGet]
     public async Task<IActionResult> GetServers() => Ok(await _context.Servers.AsNoTracking().ToListAsync());
 
+    [HttpPost]
+    public async Task<IActionResult> CreateServer()
+    {
+        var server = new Server
+        {
+            CreateDate = DateTime.Now
+        };
+
+        await _context.AddAsync(server);
+        await _context.SaveChangesAsync();
+
+        return StatusCode(StatusCodes.Status201Created, server.Id);
+    }
+    
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> RemoveServer(int id)
     {
